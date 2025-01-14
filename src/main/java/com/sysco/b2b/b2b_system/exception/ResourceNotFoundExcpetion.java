@@ -12,27 +12,6 @@ public class ResourceNotFoundExcpetion extends RuntimeException{
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //more exceptions
 //data access, connection
 //document - include the excpetions on swagger as well
