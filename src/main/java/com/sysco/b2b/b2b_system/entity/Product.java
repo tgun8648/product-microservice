@@ -1,5 +1,7 @@
 package com.sysco.b2b.b2b_system.entity;
 
+import com.sysco.b2b.b2b_system.enums.ProductCategory;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -36,6 +38,13 @@ public class Product {
 
     @Column(name = "product_images")
     private String productImages;
+
+    @Column(nullable = false)
+    private Double price;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ProductCategory category;
 
 
 }

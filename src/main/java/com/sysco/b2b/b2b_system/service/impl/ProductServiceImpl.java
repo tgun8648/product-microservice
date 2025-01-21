@@ -3,10 +3,10 @@ package com.sysco.b2b.b2b_system.service.impl;
 import com.sysco.b2b.b2b_system.dto.ProductDto;
 import com.sysco.b2b.b2b_system.entity.Product;
 import com.sysco.b2b.b2b_system.exception.ResourceNotFoundExcpetion;
-import com.sysco.b2b.b2b_system.mapper.ProductMapper;
 import com.sysco.b2b.b2b_system.repository.ProductRepository;
 import com.sysco.b2b.b2b_system.service.ProductService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
@@ -22,14 +23,27 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto createProduct(ProductDto productDto) {
-        // Convert ProductDto to Product entity
-        Product product = modelMapper.map(productDto, Product.class);
+        log.info("Starting product creation process for: {}", productDto);
 
-        // Save the Product entity
-        Product savedProduct = productRepository.save(product);
+        try {
+            // Convert ProductDto to Product entity
+            Product product = modelMapper.map(productDto, Product.class);
+            log.debug("Mapped ProductDto to Product entity: {}", product);
 
-        // Convert saved Product entity back to ProductDto
-        return modelMapper.map(savedProduct, ProductDto.class);
+            // Save the Product entity
+            Product savedProduct = productRepository.save(product);
+            log.info("Product saved successfully with ID: {}", savedProduct.getId());
+
+            // Convert saved Product entity back to ProductDto
+            ProductDto responseDto = modelMapper.map(savedProduct, ProductDto.class);
+            log.debug("Mapped saved Product entity back to ProductDto: {}", responseDto);
+
+            return responseDto;
+
+        } catch (Exception e) {
+            log.error("Error occurred while creating product: {}", e.getMessage(), e);
+            throw e;  // Let the exception propagate for global handling
+        }
     }
 
     @Override
@@ -63,6 +77,8 @@ public class ProductServiceImpl implements ProductService {
         existingProduct.setQuantity(updatedProduct.getQuantity());
         existingProduct.setProductDescription(updatedProduct.getProductDescription());
         existingProduct.setProductImages(updatedProduct.getProductImages());
+        existingProduct.setCategory(updatedProduct.getCategory());
+        existingProduct.setPrice(updatedProduct.getPrice());
 
         // Save updated product
         Product updatedProductEntity = productRepository.save(existingProduct);
